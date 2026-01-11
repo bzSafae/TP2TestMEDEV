@@ -13,8 +13,9 @@ import java.nio.file.Path;
 
 public class App {
     public static void main(String[] args) throws Exception {
-        PGMImage img = PGMImage.read(Path.of("brain.pgm"));
+        javax.swing.SwingUtilities.invokeLater(() -> new MainFrame().setVisible(true));
+     /*   PGMImage img = PGMImage.read(Path.of("brain.pgm"));
         img.write(Path.of("output.pgm"));
-        System.out.println("OK: saved output.pgm");
+        System.out.println("OK: saved output.pgm"); */
     }
 }

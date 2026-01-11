@@ -9,6 +9,7 @@ package edu.centralenantes.tp2test;
  * @author dodi
  */
 
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -139,4 +140,65 @@ public class PGMImage {
             }
         }
     }
+      public BufferedImage toBufferedImage() {
+        BufferedImage bi = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                int v = pixels[y][x];          // 0..255
+                int rgb = (v << 16) | (v << 8) | v; // gray to RGB
+                bi.setRGB(x, y, rgb);
+            }
+        }
+        return bi;
 }
+      public PGMImage threshold(int t) {
+    if (t < 0) t = 0;
+    if (t > 255) t = 255;
+
+    PGMImage out = new PGMImage(width, height);
+    for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+            int v = pixels[y][x];
+            out.set(x, y, (v >= t) ? 255 : 0);
+        }
+    }
+    return out;
+}
+
+public int[] histogram() {
+    int[] hist = new int[256];
+    for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+            hist[pixels[y][x]]++;
+        }
+    }
+    return hist;
+}
+
+public PGMImage histogramAsImage() {
+    int[] hist = histogram();
+    int W = 256, H = 100;
+    PGMImage out = new PGMImage(W, H);
+
+    // fond blanc
+    for (int y = 0; y < H; y++) {
+        for (int x = 0; x < W; x++) {
+            out.set(x, y, 255);
+        }
+    }
+
+    int max = 0;
+    for (int v : hist) max = Math.max(max, v);
+    if (max == 0) return out;
+
+    for (int x = 0; x < 256; x++) {
+        int bar = (int) Math.round((hist[x] / (double) max) * (H - 1));
+        for (int y = H - 1; y >= H - 1 - bar; y--) {
+            out.set(x, y, 0);
+        }
+    }
+    return out;
+}
+
+}
+
